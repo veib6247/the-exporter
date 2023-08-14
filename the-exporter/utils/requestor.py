@@ -10,6 +10,7 @@ def test_env():
     print(access_token)
 
 
+# for copyandpay
 def generate_checkout():
     load_dotenv()
     access_token = os.getenv('ACCESS_TOKEN')
@@ -49,14 +50,15 @@ def fetch_transactions(page: int):
         'pageNo': page
     }
 
+    print(f'Fetching page {page}...')
     r = requests.get(url=url, params=params, headers=headers)
 
     # response_data = r.text
     parsed_data = json.loads(r.text)
 
     if 'pages' in parsed_data:
+        print(f'Http code: {r.status_code}')
         page_count = parsed_data.get('pages')
-        print(f'Fetching page {page}... http code: {r.status_code}')
 
         # todo: dump data to csv
         # print(response_data)
@@ -70,7 +72,40 @@ def fetch_transactions(page: int):
             print('das ol folks!')
 
     else:
+        print(f'Http code: {r.status_code}')
         print(parsed_data['result']['description'])
+
+
+# just one beeg list
+def fetch_transactions_as_list():
+    load_dotenv()
+    access_token = os.getenv('ACCESS_TOKEN')
+
+    url = 'https://eu-test.oppwa.com/v3/query'
+
+    headers = {
+        'Authorization': f'Bearer {access_token}'}
+
+    params = {
+        'entityId': '8a8294174b7ecb28014b9699220015ca',
+        'date.from': '2023-08-13 00:00:00',
+        'date.to': '2023-08-14 23:59:59',
+        'limit': 500
+    }
+
+    print(f'Fetching list...')
+    r = requests.get(url=url, params=params, headers=headers)
+
+    if r.status_code == 200:
+        print(f'http code: {r.status_code}')
+        parsed_data = json.loads(r.text)
+
+        if 'records' in parsed_data:
+            list_of_transactions = list(parsed_data['records'])
+            print(f'Got {len(list_of_transactions)} items in the list')
+
+    else:
+        print(r.text)
 
 
 if __name__ == '__main__':
