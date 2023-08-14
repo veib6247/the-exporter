@@ -1,11 +1,22 @@
 import requests
+import os
+from dotenv import load_dotenv
+
+
+def test_env():
+    load_dotenv()
+    access_token = os.getenv('ACCESS_TOKEN')
+    print(access_token)
 
 
 def generate_checkout():
+    load_dotenv()
+    access_token = os.getenv('ACCESS_TOKEN')
+
     url = 'https://eu-test.oppwa.com/v1/checkouts'
 
     headers = {
-        'Authorization': 'Bearer OGE4Mjk0MTc0YjdlY2IyODAxNGI5Njk5MjIwMDE1Y2N8c3k2S0pzVDg='}
+        'Authorization': f'Bearer {access_token}'}
 
     payload = {
         'entityId': '8a8294174b7ecb28014b9699220015ca',
@@ -18,3 +29,7 @@ def generate_checkout():
 
     print(f'HTTP Status Code: {r.status_code}')
     print(f'Response Data: {r.text}')
+
+
+if __name__ == '__main__':
+    test_env()

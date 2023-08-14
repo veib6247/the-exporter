@@ -1,4 +1,4 @@
-from utils.requestor import generate_checkout
+from utils.requestor import generate_checkout, test_env
 
 
 def main():
