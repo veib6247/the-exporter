@@ -1,6 +1,6 @@
 import requests
-import json
 import os
+import time
 from dotenv import load_dotenv
 
 
@@ -10,7 +10,7 @@ def test_env():
     print(access_token)
 
 
-# for copyandpay
+# for COPYANDPAY
 def generate_checkout():
     load_dotenv()
     access_token = os.getenv('ACCESS_TOKEN')
@@ -37,11 +37,13 @@ def generate_checkout():
 def fetch_transactions(page: int):
     load_dotenv()
     access_token = os.getenv('ACCESS_TOKEN')
+    sleep_timer_in_seconds = 15
 
     url = 'https://eu-test.oppwa.com/v3/query'
 
     headers = {
-        'Authorization': f'Bearer {access_token}'}
+        'Authorization': f'Bearer {access_token}'
+    }
 
     params = {
         'entityId': '8a8294174b7ecb28014b9699220015ca',
@@ -52,18 +54,18 @@ def fetch_transactions(page: int):
 
     print(f'Fetching page {page}...')
     r = requests.get(url=url, params=params, headers=headers)
+    parsed_data = dict(r.json())
 
-    # response_data = r.text
-    parsed_data = json.loads(r.text)
-
-    if 'pages' in parsed_data:
-        print(f'Http code: {r.status_code}')
-        page_count = parsed_data.get('pages')
+    if r.status_code == 200:
+        print(f'http code: {r.status_code}')
+        page_count = int(parsed_data.get('pages'))
 
         # todo: dump data to csv
         # print(response_data)
 
         print(f'Showing page {page} of {page_count} pages')
+
+        time.sleep(sleep_timer_in_seconds)
 
         if page <= int(page_count):
             next_page = page + 1
@@ -76,7 +78,7 @@ def fetch_transactions(page: int):
         print(parsed_data['result']['description'])
 
 
-# just one beeg list
+# just one beeg list, limited to only 500 results, lol
 def fetch_transactions_as_list():
     load_dotenv()
     access_token = os.getenv('ACCESS_TOKEN')
@@ -84,29 +86,33 @@ def fetch_transactions_as_list():
     url = 'https://eu-test.oppwa.com/v3/query'
 
     headers = {
-        'Authorization': f'Bearer {access_token}'}
+        'Authorization': f'Bearer {access_token}'
+    }
 
     params = {
         'entityId': '8a8294174b7ecb28014b9699220015ca',
-        'date.from': '2023-08-13 00:00:00',
+        'date.from': '2023-08-14 00:00:00',
         'date.to': '2023-08-14 23:59:59',
         'limit': 500
     }
 
     print(f'Fetching list...')
     r = requests.get(url=url, params=params, headers=headers)
+    parsed_data = dict(r.json())
 
     if r.status_code == 200:
         print(f'http code: {r.status_code}')
-        parsed_data = json.loads(r.text)
+        list_of_transactions = list(parsed_data.get('records'))
 
-        if 'records' in parsed_data:
-            list_of_transactions = list(parsed_data['records'])
-            print(f'Got {len(list_of_transactions)} items in the list')
+        # print(list_of_transactions)
+        print(f'Found {len(list_of_transactions)} items in the list')
 
     else:
-        print(r.text)
+        print(parsed_data)
 
 
 if __name__ == '__main__':
-    test_env()
+    # test_env()
+    fetch_transactions(1)
+    # fetch_transactions_as_list()
+    # pass
