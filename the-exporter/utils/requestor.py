@@ -67,10 +67,10 @@ def fetch_transactions(page: int):
             next_page = page + 1
             fetch_transactions(next_page)
         else:
-            print('End of pages.')
+            print('das ol folks!')
 
     else:
-        print(parsed_data)
+        print(parsed_data['result']['description'])
 
 
 if __name__ == '__main__':
