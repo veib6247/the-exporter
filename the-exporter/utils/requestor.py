@@ -14,6 +14,7 @@ def test_env():
     load_dotenv()
     access_token = os.getenv('ACCESS_TOKEN')
     logging.warning(access_token)
+    logging.warning('Clear your terminal after testing this!')
 
 
 # for COPYANDPAY
