@@ -1,17 +1,18 @@
 import logging
 import os
-import requests
 import time
 
+import requests
 from dotenv import load_dotenv
 
 # init logging
 logging.basicConfig(level=logging.INFO)
 
+load_dotenv()
+
 
 # don't forget to clear the terminal after testing this
 def test_env():
-    load_dotenv()
     access_token = os.getenv('ACCESS_TOKEN')
     logging.warning(access_token)
     logging.warning('Clear your terminal after testing this!')
@@ -19,7 +20,6 @@ def test_env():
 
 # for COPYANDPAY
 def generate_checkout():
-    load_dotenv()
     access_token = os.getenv('ACCESS_TOKEN')
 
     url = 'https://eu-test.oppwa.com/v1/checkouts'
@@ -42,7 +42,6 @@ def generate_checkout():
 
 # fetch a list of transaction from a starting page
 def fetch_transactions(page: int):
-    load_dotenv()
     access_token = os.getenv('ACCESS_TOKEN')
 
     url = 'https://eu-test.oppwa.com/v3/query'
@@ -110,7 +109,6 @@ def fetch_transactions(page: int):
 
 # just one beeg list, limited to only 500 results, lol
 def fetch_transactions_as_list():
-    load_dotenv()
     access_token = os.getenv('ACCESS_TOKEN')
 
     url = 'https://eu-test.oppwa.com/v3/query'
@@ -141,6 +139,7 @@ def fetch_transactions_as_list():
         print(parsed_data)
 
 
+# weeeeeee!
 if __name__ == '__main__':
     test_env()
     # fetch_transactions(1)

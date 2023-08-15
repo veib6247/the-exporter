@@ -1,10 +1,8 @@
-from utils.requestor import generate_checkout, fetch_transactions, fetch_transactions_as_list
+from utils.requestor import fetch_transactions
 
 
 def main():
-    fetch_transactions(100)
-    # fetch_transactions_as_list()
-    # pass
+    fetch_transactions(1)
 
 
 if __name__ == '__main__':
