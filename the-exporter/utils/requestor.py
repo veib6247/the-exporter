@@ -1,7 +1,11 @@
 import requests
 import os
 import time
+import logging
 from dotenv import load_dotenv
+
+# init logging
+logging.basicConfig(level=logging.INFO)
 
 
 def test_env():
@@ -51,39 +55,41 @@ def fetch_transactions(page: int):
         'pageNo': page
     }
 
-    print(f'Fetching page {page}...')
+    logging.info(f'Fetching data from page {page}...')
     r = requests.get(url=url, params=params, headers=headers)
     parsed_data = dict(r.json())
+    next_page = page + 1
 
     if r.status_code == 200:
         page_count = int(parsed_data.get('pages'))
-
-        print(f'Parsing page {page} of {page_count} pages')
+        logging.info(f'Parsing page {page} of {page_count} pages')
 
         records = list(parsed_data['records'])
+
+        logging.info('Dumping items to file')
 
         # todo: dump data to csv! but for now, embrace the jank!
         for record in records:
             # uuid = record['id']
-            with open('records_per_page.txt', 'a') as file:
+            with open('records_per_page.txt', 'a', encoding='utf-8') as file:
                 file.write('%s\n' % str(record))
                 # file.write('%s\n' % str(uuid))
 
-        # sleep for 25 seconds because ACI throttles 2 requests per minute
-        time.sleep(25)
-
         # recursive call until all pages are fetched
         if page <= int(page_count):
-            next_page = page + 1
             fetch_transactions(next_page)
-
         else:
-            print('das ol folks!')
+            logging.info('das ol folks!')
 
     else:
-        print(
-            f"Http code: {r.status_code} - {parsed_data['result']['description']}"
-        )
+        logging.warning(
+            f"Http code: {r.status_code} - {parsed_data['result']['description']}")
+
+        logging.info('Sleeping for 30 secs before trying again')
+
+        # sleep for 30 seconds because ACI throttles 2 requests per minute
+        time.sleep(30)
+        fetch_transactions(page)
 
 
 # just one beeg list, limited to only 500 results, lol
