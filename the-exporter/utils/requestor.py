@@ -57,7 +57,7 @@ def fetch_transactions(page: int):
     }
 
     try:
-        logging.info(f'Fetching data from page {page}')
+        logging.info(f'Fetching records from page {page}')
         r = requests.get(url=url, params=params, headers=headers)
         parsed_data = dict(r.json())
         next_page = page + 1
@@ -68,8 +68,6 @@ def fetch_transactions(page: int):
                 f'Fetching successful! Parsing page {page} of {page_count}')
 
             records = list(parsed_data['records'])
-
-            logging.info('Dumping items to text file')
 
             # todo: dump data to csv! but for now, embrace the jank!
             for record in records:
@@ -101,7 +99,7 @@ def fetch_transactions(page: int):
         logging.error('The connection timed out')
 
     except:
-        logging.error('Welp')
+        logging.error('welp')
 
 
 # just one beeg list, limited to only 500 results, lol
