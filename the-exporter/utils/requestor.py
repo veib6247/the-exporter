@@ -72,7 +72,7 @@ def fetch_transactions(page: int):
             # todo: dump data to csv! but for now, embrace the jank!
             for record in records:
                 # uuid = record['id']
-                with open('records_per_page.txt', 'a', encoding='utf-8') as file:
+                with open('export.txt', 'a', encoding='utf-8') as file:
                     file.write('%s\n' % str(record))
                     # file.write('%s\n' % str(uuid))
 
