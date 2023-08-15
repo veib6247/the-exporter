@@ -79,7 +79,7 @@ def fetch_transactions(page: int):
                     # file.write('%s\n' % str(uuid))
 
             # recursive call until all pages are fetched
-            if page <= int(page_count):
+            if next_page <= int(page_count):
                 fetch_transactions(next_page)
             else:
                 logging.info('Writing data to text file completed')
