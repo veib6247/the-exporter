@@ -8,10 +8,11 @@ from dotenv import load_dotenv
 logging.basicConfig(level=logging.INFO)
 
 
+# don't forget to clear the terminal after testing this
 def test_env():
     load_dotenv()
     access_token = os.getenv('ACCESS_TOKEN')
-    print(access_token)
+    logging.warning(access_token)
 
 
 # for COPYANDPAY
@@ -33,7 +34,7 @@ def generate_checkout():
 
     r = requests.post(url=url, data=payload, headers=headers)
 
-    print(f'HTTP Status Code: {r.status_code}')
+    print(f'http: {r.status_code}')
     print(f'Response Data: {r.text}')
 
 
@@ -50,46 +51,57 @@ def fetch_transactions(page: int):
 
     params = {
         'entityId': '8a8294174b7ecb28014b9699220015ca',
-        'date.from': '2023-08-14 00:00:00',
-        'date.to': '2023-08-14 23:59:59',
+        'date.from': '2023-08-15 00:00:00',
+        'date.to': '2023-08-15 23:59:59',
         'pageNo': page
     }
 
-    logging.info(f'Fetching data from page {page}...')
-    r = requests.get(url=url, params=params, headers=headers)
-    parsed_data = dict(r.json())
-    next_page = page + 1
+    try:
+        logging.info(f'Fetching data from page {page}')
+        r = requests.get(url=url, params=params, headers=headers)
+        parsed_data = dict(r.json())
+        next_page = page + 1
 
-    if r.status_code == 200:
-        page_count = int(parsed_data.get('pages'))
-        logging.info(f'Parsing page {page} of {page_count} pages')
+        if r.status_code == 200:
+            page_count = int(parsed_data.get('pages'))
+            logging.info(
+                f'Fetching successful! Parsing page {page} of {page_count}')
 
-        records = list(parsed_data['records'])
+            records = list(parsed_data['records'])
 
-        logging.info('Dumping items to file')
+            logging.info('Dumping items to text file')
 
-        # todo: dump data to csv! but for now, embrace the jank!
-        for record in records:
-            # uuid = record['id']
-            with open('records_per_page.txt', 'a', encoding='utf-8') as file:
-                file.write('%s\n' % str(record))
-                # file.write('%s\n' % str(uuid))
+            # todo: dump data to csv! but for now, embrace the jank!
+            for record in records:
+                # uuid = record['id']
+                with open('records_per_page.txt', 'a', encoding='utf-8') as file:
+                    file.write('%s\n' % str(record))
+                    # file.write('%s\n' % str(uuid))
 
-        # recursive call until all pages are fetched
-        if page <= int(page_count):
-            fetch_transactions(next_page)
+            # recursive call until all pages are fetched
+            if page <= int(page_count):
+                fetch_transactions(next_page)
+            else:
+                logging.info('Writing data to text file completed')
+
         else:
-            logging.info('das ol folks!')
+            logging.warning(
+                f"http: {r.status_code} - {parsed_data['result']['description']}")
 
-    else:
-        logging.warning(
-            f"Http code: {r.status_code} - {parsed_data['result']['description']}")
+            # sleep for 30 seconds because ACI throttles 2 requests per minute
+            sleep_in_seconds = 30
+            logging.info(
+                f'Sleeping for {sleep_in_seconds} seconds before trying again')
 
-        logging.info('Sleeping for 30 secs before trying again')
+            time.sleep(sleep_in_seconds)
 
-        # sleep for 30 seconds because ACI throttles 2 requests per minute
-        time.sleep(30)
-        fetch_transactions(page)
+            fetch_transactions(page)
+
+    except requests.exceptions.ConnectTimeout:
+        logging.error('The connection timed out')
+
+    except:
+        logging.error('Welp')
 
 
 # just one beeg list, limited to only 500 results, lol
@@ -110,16 +122,16 @@ def fetch_transactions_as_list():
         'limit': 500
     }
 
-    print(f'Fetching list...')
+    logging.info(f'Fetching list...')
     r = requests.get(url=url, params=params, headers=headers)
     parsed_data = dict(r.json())
 
     if r.status_code == 200:
-        print(f'http code: {r.status_code}')
+        logging.info(f'http: {r.status_code}')
         list_of_transactions = list(parsed_data.get('records'))
 
         # print(list_of_transactions)
-        print(f'Found {len(list_of_transactions)} items in the list')
+        logging.info(f'Found {len(list_of_transactions)} items in the list')
 
     else:
         print(parsed_data)
