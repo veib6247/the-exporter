@@ -1,7 +1,6 @@
 import requests
 import os
 import time
-import json
 from dotenv import load_dotenv
 
 
@@ -38,7 +37,6 @@ def generate_checkout():
 def fetch_transactions(page: int):
     load_dotenv()
     access_token = os.getenv('ACCESS_TOKEN')
-    sleep_timer_in_seconds = 25
 
     url = 'https://eu-test.oppwa.com/v3/query'
 
@@ -58,22 +56,24 @@ def fetch_transactions(page: int):
     parsed_data = dict(r.json())
 
     if r.status_code == 200:
-        print(f'http code: {r.status_code}')
         page_count = int(parsed_data.get('pages'))
 
         print(f'Parsing page {page} of {page_count} pages')
 
-        # todo: dump data to csv!
-        # but for now, behold the jank below!
-        line = json.dumps(parsed_data['records'])
+        records = list(parsed_data['records'])
 
-        with open('records_per_page.txt', 'a') as file:
-            file.write('{ "records": %s }\n' % (line))
+        # todo: dump data to csv! but for now, embrace the jank!
+        for record in records:
+            # uuid = record['id']
+            with open('records_per_page.txt', 'a') as file:
+                file.write('%s\n' % str(record))
+                # file.write('%s\n' % str(uuid))
+
+        # sleep for 25 seconds because ACI throttles 2 requests per minute
+        time.sleep(25)
 
         # recursive call until all pages are fetched
         if page <= int(page_count):
-            time.sleep(sleep_timer_in_seconds)
-
             next_page = page + 1
             fetch_transactions(next_page)
 
@@ -81,8 +81,9 @@ def fetch_transactions(page: int):
             print('das ol folks!')
 
     else:
-        print(f'Http code: {r.status_code}')
-        print(parsed_data['result']['description'])
+        print(
+            f"Http code: {r.status_code} - {parsed_data['result']['description']}"
+        )
 
 
 # just one beeg list, limited to only 500 results, lol
@@ -119,7 +120,7 @@ def fetch_transactions_as_list():
 
 
 if __name__ == '__main__':
-    # test_env()
-    fetch_transactions(1)
+    test_env()
+    # fetch_transactions(1)
     # fetch_transactions_as_list()
     # pass

@@ -2,9 +2,9 @@ from utils.requestor import generate_checkout, fetch_transactions, fetch_transac
 
 
 def main():
-    # fetch_transactions(1)
+    fetch_transactions(1)
     # fetch_transactions_as_list()
-    pass
+    # pass
 
 
 if __name__ == '__main__':
