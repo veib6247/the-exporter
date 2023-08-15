@@ -98,8 +98,12 @@ def fetch_transactions(page: int):
     except requests.exceptions.ConnectTimeout:
         logging.error('The connection timed out')
 
-    except:
-        logging.error('welp')
+    except KeyboardInterrupt:
+        logging.info('Program terminated manually')
+
+    except Exception as e:
+        logging.error('Program terminated unexpectedly')
+        logging.error(e)
 
 
 # just one beeg list, limited to only 500 results, lol
