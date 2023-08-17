@@ -2,6 +2,7 @@ import logging
 import os
 import time
 
+import pandas as pd
 import requests
 from dotenv import load_dotenv
 
@@ -41,7 +42,7 @@ def generate_checkout():
 
 
 # fetch a list of transaction from a starting page
-def fetch_transactions(page: int):
+def fetch_transactions(page: int, include_headers: bool):
     access_token = os.getenv('ACCESS_TOKEN')
 
     url = 'https://eu-test.oppwa.com/v3/query'
@@ -54,6 +55,7 @@ def fetch_transactions(page: int):
         'entityId': '8a8294174b7ecb28014b9699220015ca',
         'date.from': '2023-08-15 00:00:00',
         'date.to': '2023-08-15 23:59:59',
+        'paymentTypes': 'DB,RF,PA,CP,RV,3D',
         'pageNo': page
     }
 
@@ -70,18 +72,16 @@ def fetch_transactions(page: int):
 
             records = list(parsed_data['records'])
 
-            # todo: dump data to csv! but for now, embrace the jank!
-            for record in records:
-                # uuid = record['id']
-                with open('export.txt', 'a', encoding='utf-8') as file:
-                    file.write('%s\n' % str(record))
-                    # file.write('%s\n' % str(uuid))
+            df = pd.DataFrame(records)
+
+            df.to_csv('export.csv', mode='a',
+                      index=False, header=include_headers)
 
             # recursive call until all pages are fetched
             if next_page <= int(page_count):
-                fetch_transactions(next_page)
+                fetch_transactions(next_page, False)
             else:
-                logging.info('Writing data to text file completed')
+                logging.info('Task completed')
 
         else:
             logging.warning(
@@ -94,7 +94,7 @@ def fetch_transactions(page: int):
 
             time.sleep(sleep_in_seconds)
 
-            fetch_transactions(page)
+            fetch_transactions(page, False)
 
     except requests.exceptions.ConnectTimeout:
         logging.error('The connection timed out')
@@ -141,7 +141,7 @@ def fetch_transactions_as_list():
 
 # weeeeeee!
 if __name__ == '__main__':
-    test_env()
-    # fetch_transactions(1)
+    # test_env()
+    fetch_transactions(1, True)
     # fetch_transactions_as_list()
     # pass
