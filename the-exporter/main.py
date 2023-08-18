@@ -26,9 +26,7 @@ columns = [
     'resultDetails',
     'card',
     'risk',
-    'buildNumber',
-    'timestamp',
-    'ndc',
+    'timestamp'
 ]
 
 df = pd.DataFrame(columns=columns)
@@ -45,10 +43,10 @@ def fetch_transactions(page: int, include_headers: bool):
     }
 
     params = {
-        'entityId': '8a8294174b7ecb28014b9699220015ca',
-        'date.from': '2023-08-18 00:00:00',
+        'entityId': '8ac7a4c76b30836c016b45c43685174d',
+        'date.from': '2023-08-01 00:00:00',
         'date.to': '2023-08-18 23:59:59',
-        'paymentTypes': 'DB,RF,PA,CP,RV,3D',
+        'paymentTypes': 'DB,RF,PA,CP,RV',
         'pageNo': page
     }
 
@@ -74,7 +72,10 @@ def fetch_transactions(page: int, include_headers: bool):
                 for column_name in columns:
 
                     if column_name in record:
-                        row.append(record[column_name])
+                        if column_name == 'risk':
+                            row.append(record[column_name]['score'])
+                        else:
+                            row.append(record[column_name])
 
                     else:
                         if column_name == 'result_code':
@@ -98,8 +99,7 @@ def fetch_transactions(page: int, include_headers: bool):
             # recursive call until all pages are fetched
             fetch_transactions(
                 next_page, False) if next_page <= page_count else logging.info('Task completed')
-
-        else:
+        elif r.status_code == 429:
             logging.warning(
                 f"http: {r.status_code} - {parsed_data['result']['description']}"
             )
@@ -114,7 +114,10 @@ def fetch_transactions(page: int, include_headers: bool):
             time.sleep(sleep_in_seconds)
 
             fetch_transactions(page, False)
-
+        else:
+            logging.error(
+                f"http: {r.status_code} - {parsed_data['result']['description']}"
+            )
     except requests.exceptions.ConnectTimeout:
         logging.error('The connection timed out')
     except KeyboardInterrupt:
@@ -124,7 +127,8 @@ def fetch_transactions(page: int, include_headers: bool):
 
 
 def main():
-    fetch_transactions(1, True)
+    page_start = int(input('Enter page start: '))
+    fetch_transactions(page_start, True)
 
 
 if __name__ == '__main__':
