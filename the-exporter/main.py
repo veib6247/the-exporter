@@ -43,9 +43,9 @@ def fetch_transactions(page: int, include_headers: bool):
     }
 
     params = {
-        'entityId': '8ac7a4c76b30836c016b45c43685174d',
+        'entityId': '8a8294174b7ecb28014b9699220015ca',
         'date.from': '2023-08-01 00:00:00',
-        'date.to': '2023-08-18 23:59:59',
+        'date.to': '2023-08-19 23:59:59',
         'paymentTypes': 'DB,RF,PA,CP,RV',
         'pageNo': page
     }
@@ -72,20 +72,17 @@ def fetch_transactions(page: int, include_headers: bool):
                 for column_name in columns:
 
                     if column_name in record:
-                        if column_name == 'risk':
-                            row.append(record[column_name]['score'])
-                        else:
-                            row.append(record[column_name])
+                        row.append(record[column_name]['score']) if column_name == 'risk' else row.append(
+                            record[column_name])
 
                     else:
-                        if column_name == 'result_code':
-                            row.append(record['result']['code'])
-
-                        elif column_name == 'result_description':
-                            row.append(record['result']['description'])
-
-                        else:
-                            row.append('')
+                        match column_name:
+                            case 'result_code':
+                                row.append(record['result']['code'])
+                            case 'result_description':
+                                row.append(record['result']['description'])
+                            case _:
+                                row.append('')
 
                 df.loc[len(df)] = row
 
@@ -123,12 +120,25 @@ def fetch_transactions(page: int, include_headers: bool):
     except KeyboardInterrupt:
         logging.info('Program terminated manually')
     except Exception as e:
-        logging.error(e)
+        logging.exception(e)
+
+
+# recursive too, electric bugaloo!
+def get_user_input():
+    try:
+        page_start = int(input('Enter a start page no: '))
+        fetch_transactions(page_start, True)
+
+    except ValueError:
+        logging.info('Please input valid number!')
+        get_user_input()
+
+    except Exception as e:
+        logging.exception(e)
 
 
 def main():
-    page_start = int(input('Enter page start: '))
-    fetch_transactions(page_start, True)
+    get_user_input()
 
 
 if __name__ == '__main__':
