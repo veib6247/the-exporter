@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 import time
@@ -73,15 +74,27 @@ def fetch_transactions(page: int, include_headers: bool):
                     for column_name in columns:
 
                         if column_name in record:
-                            row.append(record[column_name]['score']) if column_name == 'risk' else row.append(
-                                record[column_name])
+                            match column_name:
+                                case 'risk':
+                                    row.append(record[column_name]['score'])
+
+                                case 'resultDetails':
+                                    row.append(json.dumps(record[column_name]))
+
+                                case 'card':
+                                    row.append(json.dumps(record[column_name]))
+
+                                case _:
+                                    row.append(record[column_name])
 
                         else:
                             match column_name:
                                 case 'result_code':
                                     row.append(record['result']['code'])
+
                                 case 'result_description':
                                     row.append(record['result']['description'])
+
                                 case _:
                                     row.append('')
 
@@ -91,6 +104,7 @@ def fetch_transactions(page: int, include_headers: bool):
                     'export.csv',
                     mode='a',
                     index=False,
+                    encoding='utf-8',
                     header=include_headers
                 )
 
@@ -100,7 +114,7 @@ def fetch_transactions(page: int, include_headers: bool):
 
             case 429:
                 logging.warning(
-                    f"http: {r.status_code} - {parsed_data['result']['description']}"
+                    f"http {r.status_code} - {parsed_data['result']['description']}"
                 )
 
                 # sleep for 30 seconds because ACI throttles 2 requests per minute
@@ -116,7 +130,7 @@ def fetch_transactions(page: int, include_headers: bool):
 
             case _:
                 logging.error(
-                    f"http: {r.status_code} - {parsed_data['result']['description']}"
+                    f"http {r.status_code} - {parsed_data['result']['description']}"
                 )
 
     except requests.exceptions.ConnectTimeout:
