@@ -135,8 +135,10 @@ def fetch_transactions(page: int, include_headers: bool):
 
     except requests.exceptions.ConnectTimeout:
         logging.error('The connection timed out')
+
     except KeyboardInterrupt:
         logging.info('Program terminated manually')
+
     except Exception as e:
         logging.exception(e)
 
@@ -148,7 +150,7 @@ def get_user_input():
         fetch_transactions(page_start, True)
 
     except ValueError:
-        logging.info('Please input valid number!')
+        logging.warning('Please input valid number')
         get_user_input()
 
     except Exception as e:
