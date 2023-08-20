@@ -57,64 +57,68 @@ def fetch_transactions(page: int, include_headers: bool):
 
         next_page = page + 1
 
-        if r.status_code == 200:
-            page_count = int(parsed_data['pages'])
+        match r.status_code:
+            case 200:
+                page_count = int(parsed_data['pages'])
 
-            logging.info(
-                f'Fetching successful! Parsing page {page} of {page_count}'
-            )
+                logging.info(
+                    f'Fetching successful! Parsing page {page} of {page_count}'
+                )
 
-            records = list(parsed_data['records'])
+                records = list(parsed_data['records'])
 
-            for record in records:
+                for record in records:
 
-                row = []
-                for column_name in columns:
+                    row = []
+                    for column_name in columns:
 
-                    if column_name in record:
-                        row.append(record[column_name]['score']) if column_name == 'risk' else row.append(
-                            record[column_name])
+                        if column_name in record:
+                            row.append(record[column_name]['score']) if column_name == 'risk' else row.append(
+                                record[column_name])
 
-                    else:
-                        match column_name:
-                            case 'result_code':
-                                row.append(record['result']['code'])
-                            case 'result_description':
-                                row.append(record['result']['description'])
-                            case _:
-                                row.append('')
+                        else:
+                            match column_name:
+                                case 'result_code':
+                                    row.append(record['result']['code'])
+                                case 'result_description':
+                                    row.append(record['result']['description'])
+                                case _:
+                                    row.append('')
 
-                df.loc[len(df)] = row
+                    df.loc[len(df)] = row
 
-            df.to_csv(
-                'export.csv',
-                mode='a',
-                index=False,
-                header=include_headers
-            )
+                df.to_csv(
+                    'export.csv',
+                    mode='a',
+                    index=False,
+                    header=include_headers
+                )
 
-            # recursive call until all pages are fetched
-            fetch_transactions(
-                next_page, False) if next_page <= page_count else logging.info('Task completed')
-        elif r.status_code == 429:
-            logging.warning(
-                f"http: {r.status_code} - {parsed_data['result']['description']}"
-            )
+                # recursive call until all pages are fetched
+                fetch_transactions(
+                    next_page, False) if next_page <= page_count else logging.info('Task completed')
 
-            # sleep for 30 seconds because ACI throttles 2 requests per minute
-            sleep_in_seconds = 30
+            case 429:
+                logging.warning(
+                    f"http: {r.status_code} - {parsed_data['result']['description']}"
+                )
 
-            logging.info(
-                f'Sleeping for {sleep_in_seconds} seconds before trying again'
-            )
+                # sleep for 30 seconds because ACI throttles 2 requests per minute
+                sleep_in_seconds = 30
 
-            time.sleep(sleep_in_seconds)
+                logging.info(
+                    f'Sleeping for {sleep_in_seconds} seconds before trying again'
+                )
 
-            fetch_transactions(page, False)
-        else:
-            logging.error(
-                f"http: {r.status_code} - {parsed_data['result']['description']}"
-            )
+                time.sleep(sleep_in_seconds)
+
+                fetch_transactions(page, False)
+
+            case _:
+                logging.error(
+                    f"http: {r.status_code} - {parsed_data['result']['description']}"
+                )
+
     except requests.exceptions.ConnectTimeout:
         logging.error('The connection timed out')
     except KeyboardInterrupt:
