@@ -6,6 +6,7 @@ import time
 import pandas as pd
 import requests
 from dotenv import load_dotenv
+from tqdm import tqdm
 
 # init logging
 logging.basicConfig(
@@ -45,8 +46,8 @@ def fetch_transactions(page: int, include_headers: bool):
 
     params = {
         'entityId': '8a8294174b7ecb28014b9699220015ca',
-        'date.from': '2023-08-01 00:00:00',
-        'date.to': '2023-08-19 23:59:59',
+        'date.from': '2023-08-21 00:00:00',
+        'date.to': '2023-08-21 23:59:59',
         'paymentTypes': 'DB,RF,PA,CP,RV',
         'pageNo': page
     }
@@ -68,7 +69,7 @@ def fetch_transactions(page: int, include_headers: bool):
 
                 records = list(parsed_data['records'])
 
-                for record in records:
+                for record in tqdm(records):
 
                     row = []
                     for column_name in columns:
