@@ -153,6 +153,9 @@ def get_user_input():
         logging.warning('Please input valid number')
         get_user_input()
 
+    except KeyboardInterrupt:
+        logging.info('Program terminated manually')
+
     except Exception as e:
         logging.exception(e)
 
