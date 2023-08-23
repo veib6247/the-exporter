@@ -2,6 +2,11 @@
 
 This tool automates the process of exporting transactions from BIP.
 
+## Requirements
+
+- [Python 3.11+](https://www.python.org/downloads/)
+- [PIP](https://pip.pypa.io/en/stable/installation/)
+
 ## Instructions
 
 1. Install the dependencies from the `requirements.txt` file
