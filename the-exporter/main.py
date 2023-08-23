@@ -46,10 +46,10 @@ def fetch_transactions(page: int, include_headers: bool):
 
     params = {
         'entityId': '8a8294174b7ecb28014b9699220015ca',
-        'date.from': '2023-08-21 00:00:00',
-        'date.to': '2023-08-21 23:59:59',
+        'date.from': '2023-08-23 00:00:00',
+        'date.to': '2023-08-23 23:59:59',
         'paymentTypes': 'DB,RF,PA,CP,RV',
-        'pageNo': page
+        'pageNo': page  # do not modify
     }
 
     try:
