@@ -23,8 +23,7 @@ columns = [
     'amount',
     'currency',
     'descriptor',
-    'result_code',
-    'result_description',
+    'result',
     'resultDetails',
     'card',
     'risk',
@@ -46,8 +45,8 @@ def fetch_transactions(page: int, include_headers: bool):
 
     params = {
         'entityId': '8a8294174b7ecb28014b9699220015ca',
-        'date.from': '2023-08-23 00:00:00',
-        'date.to': '2023-08-23 23:59:59',
+        'date.from': '2023-08-24 00:00:00',
+        'date.to': '2023-08-24 23:59:59',
         'paymentTypes': 'DB,RF,PA,CP,RV',
         'pageNo': page  # do not modify
     }
@@ -76,8 +75,10 @@ def fetch_transactions(page: int, include_headers: bool):
 
                         if column_name in record:
                             match column_name:
-                                case 'risk':
-                                    row.append(record[column_name]['score'])
+                                # encode json format as string before appending to the row
+                                # this is important so that Excel's power query can properly parse the data into columns
+                                case 'result':
+                                    row.append(json.dumps(record[column_name]))
 
                                 case 'resultDetails':
                                     row.append(json.dumps(record[column_name]))
@@ -85,19 +86,14 @@ def fetch_transactions(page: int, include_headers: bool):
                                 case 'card':
                                     row.append(json.dumps(record[column_name]))
 
+                                case 'risk':
+                                    row.append(json.dumps(record[column_name]))
+
                                 case _:
                                     row.append(record[column_name])
 
                         else:
-                            match column_name:
-                                case 'result_code':
-                                    row.append(record['result']['code'])
-
-                                case 'result_description':
-                                    row.append(record['result']['description'])
-
-                                case _:
-                                    row.append('')
+                            row.append('')
 
                     df.loc[len(df)] = row
 
