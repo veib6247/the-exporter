@@ -18,6 +18,7 @@ load_dotenv()
 
 columns = [
     'id',
+    'registrationId',
     'paymentType',
     'paymentBrand',
     'amount',
@@ -25,11 +26,13 @@ columns = [
     'descriptor',
     'result',
     'resultDetails',
+    'card',
+    'customer',
     'threeDSecure',
     'customParameters',
-    'card',
     'risk',
-    'timestamp'
+    'timestamp',
+    'referencedId'
 ]
 
 df = pd.DataFrame(columns=columns)
@@ -49,7 +52,7 @@ def fetch_transactions(page: int, include_headers: bool):
         'entityId': '8a8294174b7ecb28014b9699220015ca',
         'date.from': '2023-08-24 00:00:00',
         'date.to': '2023-08-24 23:59:59',
-        'paymentTypes': 'DB,RF,PA,CP,RV',
+        'paymentTypes': 'DB,RF,PA,CP,RV,3D',
         'pageNo': page  # do not modify
     }
 
