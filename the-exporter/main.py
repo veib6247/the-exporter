@@ -35,6 +35,15 @@ columns = [
     'referencedId'
 ]
 
+columns_with_json_inside = [
+    'result',
+    'resultDetails',
+    'card',
+    'threeDSecure',
+    'customParameters',
+    'risk'
+]
+
 df = pd.DataFrame(columns=columns)
 
 
@@ -79,29 +88,8 @@ def fetch_transactions(page: int, include_headers: bool):
                     for column_name in columns:
 
                         if column_name in record:
-                            match column_name:
-                                # encode json format as string before appending to the row
-                                # this is important so that Excel's power query can properly parse the data into columns
-                                case 'result':
-                                    row.append(json.dumps(record[column_name]))
-
-                                case 'resultDetails':
-                                    row.append(json.dumps(record[column_name]))
-
-                                case 'card':
-                                    row.append(json.dumps(record[column_name]))
-
-                                case 'threeDSecure':
-                                    row.append(json.dumps(record[column_name]))
-
-                                case 'customParameters':
-                                    row.append(json.dumps(record[column_name]))
-
-                                case 'risk':
-                                    row.append(json.dumps(record[column_name]))
-
-                                case _:
-                                    row.append(record[column_name])
+                            row.append(json.dumps(record[column_name])) if column_name in columns_with_json_inside else row.append(
+                                record[column_name])
 
                         else:
                             row.append('')
