@@ -160,6 +160,5 @@ cython_debug/
 #.idea/
 
 #local
-export.txt
-export.csv
+*.csv
 app.log

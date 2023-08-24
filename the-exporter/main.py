@@ -2,6 +2,7 @@ import json
 import logging
 import os
 import time
+from datetime import datetime
 
 import pandas as pd
 import requests
@@ -13,6 +14,9 @@ logging.basicConfig(
     format='%(asctime)s-%(levelname)s: %(message)s',
     level=logging.INFO
 )
+
+now = datetime.now()
+dt_string = now.strftime("%d_%m_%Y_%H_%M_%S")
 
 load_dotenv()
 
@@ -60,8 +64,8 @@ def fetch_transactions(page: int, include_headers: bool):
 
     params = {
         'entityId': '8a8294174b7ecb28014b9699220015ca',
-        'date.from': '2023-08-24 00:00:00',
-        'date.to': '2023-08-24 23:59:59',
+        'date.from': '2023-07-01 00:00:00',
+        'date.to': '2023-07-31 23:59:59',
         'paymentTypes': 'DB,RF,PA,CP,RV,3D',
         'pageNo': page  # do not modify
     }
@@ -97,8 +101,9 @@ def fetch_transactions(page: int, include_headers: bool):
 
                     df.loc[len(df)] = row
 
+                file_name = f'export-{dt_string}.csv'
                 df.to_csv(
-                    'export.csv',
+                    file_name,
                     mode='a',
                     index=False,
                     encoding='utf-8',
