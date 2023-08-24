@@ -39,6 +39,7 @@ columns_with_json_inside = [
     'result',
     'resultDetails',
     'card',
+    'customer',
     'threeDSecure',
     'customParameters',
     'risk'
