@@ -24,13 +24,13 @@ columns = [
     'amount',
     'currency',
     'descriptor',
-    'result',
-    'resultDetails',
-    'card',
-    'customer',
-    'threeDSecure',
-    'customParameters',
-    'risk',
+    'result',  # contains code and description
+    'resultDetails',  # POSSIBLY contains clearingInstituteName, ...
+    'card',  # POSSIBLY contains bin, last4Digits, holder, ...
+    'customer',  # POSSIBLY contains ip, ...
+    'threeDSecure',  # POSSIBLY contains eci
+    'customParameters',  # POSSIBLY contains CTPE_DESCRIPTOR_TEMPLATE...
+    'risk',  # POSSIBLY contains score
     'timestamp',
     'referencedId'
 ]
