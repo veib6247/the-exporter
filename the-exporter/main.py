@@ -15,6 +15,7 @@ logging.basicConfig(
     level=logging.INFO
 )
 
+# init date & time to append to the file name on 1st run
 now = datetime.now()
 dt_string = now.strftime("%d_%m_%Y_%H_%M_%S")
 
