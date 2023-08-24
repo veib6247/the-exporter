@@ -25,6 +25,8 @@ columns = [
     'descriptor',
     'result',
     'resultDetails',
+    'threeDSecure',
+    'customParameters',
     'card',
     'risk',
     'timestamp'
@@ -84,6 +86,12 @@ def fetch_transactions(page: int, include_headers: bool):
                                     row.append(json.dumps(record[column_name]))
 
                                 case 'card':
+                                    row.append(json.dumps(record[column_name]))
+
+                                case 'threeDSecure':
+                                    row.append(json.dumps(record[column_name]))
+
+                                case 'customParameters':
                                     row.append(json.dumps(record[column_name]))
 
                                 case 'risk':
