@@ -63,6 +63,12 @@ def fetch_transactions(page: int, include_headers: bool):
         'Authorization': f'Bearer {access_token}'
     }
 
+    # All possible for paymentTypes are:
+    # CB,CD,CR,DB,CP,IV,PA,RB,RC,RF,RL,RV,AD,IN,FI,CL,CF,DR,RG,RR,TE,CT,DS,
+    # RS,SD,AC,MD,EA,RI,3D,SA,EN,ID,IC,DP,CG,TG,SF,IS,VD,DV,AF,GK,RD,TM,FT,
+    # KT,AR,AL,PL,FN,FZ,RE,RX,FO,CS,EX,SE,AU,TK,TF,ER
+    # separete each with a comma when using multiple types
+
     params = {
         'entityId': '8a8294174b7ecb28014b9699220015ca',
         'date.from': '2023-11-01 00:00:00',
