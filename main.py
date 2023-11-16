@@ -65,9 +65,9 @@ def fetch_transactions(page: int, include_headers: bool):
 
     params = {
         'entityId': '8a8294174b7ecb28014b9699220015ca',
-        'date.from': '2023-07-01 00:00:00',
-        'date.to': '2023-07-31 23:59:59',
-        'paymentTypes': 'DB,RF,PA,CP,RV,3D',
+        'date.from': '2023-08-01 00:00:00',
+        'date.to': '2023-08-01 23:59:59',
+        'paymentTypes': 'PA',
         'pageNo': page  # do not modify
     }
 
