@@ -65,8 +65,8 @@ def fetch_transactions(page: int, include_headers: bool):
 
     params = {
         'entityId': '8a8294174b7ecb28014b9699220015ca',
-        'date.from': '2023-08-01 00:00:00',
-        'date.to': '2023-08-01 23:59:59',
+        'date.from': '2023-11-01 00:00:00',
+        'date.to': '2023-11-16 23:59:59',
         'paymentTypes': 'PA',
         'pageNo': page  # do not modify
     }
@@ -102,7 +102,7 @@ def fetch_transactions(page: int, include_headers: bool):
 
                     df.loc[len(df)] = row
 
-                file_name = f'export-{dt_string}.csv'
+                file_name = f'downloads/export-{dt_string}.csv'
                 df.to_csv(
                     file_name,
                     mode='a',
@@ -117,14 +117,16 @@ def fetch_transactions(page: int, include_headers: bool):
 
             case 429:
                 logging.warning(
-                    f"http {r.status_code} - {parsed_data['result']['description']}"
+                    f"http {
+                        r.status_code} - {parsed_data['result']['description']}"
                 )
 
                 # sleep for 30 seconds because ACI throttles 2 requests per minute
                 sleep_in_seconds = 30
 
                 logging.info(
-                    f'Sleeping for {sleep_in_seconds} seconds before trying again'
+                    f'Sleeping for {
+                        sleep_in_seconds} seconds before trying again'
                 )
 
                 time.sleep(sleep_in_seconds)
@@ -133,7 +135,8 @@ def fetch_transactions(page: int, include_headers: bool):
 
             case _:
                 logging.error(
-                    f"http {r.status_code} - {parsed_data['result']['description']}"
+                    f"http {
+                        r.status_code} - {parsed_data['result']['description']}"
                 )
 
     except requests.exceptions.ConnectTimeout:
